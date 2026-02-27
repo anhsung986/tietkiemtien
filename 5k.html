@@ -27,12 +27,12 @@ padding:15px;
 }
 
 .money-btn{
-padding:15px;
+padding:14px;
 border:none;
 border-radius:10px;
 background:#4caf50;
 color:white;
-font-size:16px;
+font-size:15px;
 cursor:pointer;
 transition:0.2s;
 }
@@ -68,7 +68,7 @@ font-size:16px;
 <body>
 
 <div class="header">
-<h2>Tiết Kiệm 1m5</h2>
+<h2>Tiết Kiệm 1.500.000đ</h2>
 <p id="status">Chưa chọn số tiền</p>
 
 <div class="stats">
@@ -83,9 +83,11 @@ font-size:16px;
 <button class="save-btn" onclick="saveMoney()">💾 LƯU & KHÓA</button>
 
 <script>
-let storageKey = "lockedButtons5k";
+
+let storageKey = "saveMoneyData";
 let selectedAmount = null;
 
+// Lấy dữ liệu đã lưu
 let lockedButtons = JSON.parse(localStorage.getItem(storageKey)) || [];
 
 let grid = document.getElementById("moneyGrid");
@@ -93,23 +95,14 @@ let status = document.getElementById("status");
 let totalMoneyEl = document.getElementById("totalMoney");
 let totalWeeksEl = document.getElementById("totalWeeks");
 
-// Cập nhật thống kê
-function updateStats(){
-    let total = lockedButtons.reduce((a,b)=>a+b,0);
-    totalMoneyEl.innerText = total.toLocaleString();
-    totalWeeksEl.innerText = lockedButtons.length;
-}
+// ===== TẠO 300 TUẦN (5k → 1500k) =====
+for(let i = 1; i <= 300; i++){
 
-updateStats();
-
-// Tạo nút từ 5k đến 1500k
-for(let i=5; i<=1500; i+=5){
-
-    let amount = i * 1000;
+    let amount = i * 5000; // mỗi tuần 5k
 
     let btn = document.createElement("button");
-    btn.className="money-btn";
-    btn.innerText = i + "k";
+    btn.className = "money-btn";
+    btn.innerText = (amount / 1000) + "k";
 
     if(lockedButtons.includes(amount)){
         btn.disabled = true;
@@ -122,6 +115,7 @@ for(let i=5; i<=1500; i+=5){
     grid.appendChild(btn);
 }
 
+// ===== CHỌN TIỀN =====
 function selectMoney(amount, element){
 
     if(element.disabled) return;
@@ -136,9 +130,10 @@ function selectMoney(amount, element){
     status.innerText = "Đã chọn: " + amount.toLocaleString() + " đ (Chưa lưu)";
 }
 
+// ===== LƯU & KHÓA =====
 function saveMoney(){
 
-    if(selectedAmount == null){
+    if(selectedAmount === null){
         alert("⚠ Vui lòng chọn số tiền trước!");
         return;
     }
@@ -148,10 +143,22 @@ function saveMoney(){
         localStorage.setItem(storageKey, JSON.stringify(lockedButtons));
     }
 
-    alert("✅ Đã lưu và khóa!");
+    alert("✅ Đã lưu thành công!");
 
     location.reload();
 }
+
+// ===== CẬP NHẬT THỐNG KÊ =====
+function updateStats(){
+
+    let total = lockedButtons.reduce((sum, value) => sum + value, 0);
+
+    totalMoneyEl.innerText = total.toLocaleString();
+    totalWeeksEl.innerText = lockedButtons.length;
+}
+
+updateStats();
+
 </script>
 
 </body>
