@@ -1,49 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khóa Ứng Dụng</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+color:white;
+background: linear-gradient(-45deg,#ff4da6,#ffd700,#00cc66,#3399ff);
+background-size:400% 400%;
+animation:rainbow 8s ease infinite;
+}
+@keyframes rainbow{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+.box{
+text-align:center;
+background:rgba(0,0,0,0.6);
+padding:30px;
+border-radius:15px;
+width:300px;
+}
+input{
+padding:10px;
+font-size:18px;
+border-radius:8px;
+border:none;
+margin-top:10px;
+text-align:center;
+width:90%;
+}
+button{
+margin-top:15px;
+padding:10px 20px;
+font-size:16px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+#error{
+margin-top:10px;
+color:#ff4d4d;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box" id="box">
+<h2>🔐 Nhập mật khẩu</h2>
+<input type="password" id="pass" placeholder="Nhập mật khẩu">
+<br>
+<button onclick="login()">Mở App</button>
+<p id="error"></p>
+</div>
+
 <script>
 let savedPassword = localStorage.getItem("appPassword");
+let box = document.getElementById("box");
 
-const box = document.querySelector(".box");
-
+/* ====== NẾU CHƯA CÓ MẬT KHẨU -> ĐĂNG KÝ ====== */
 if(!savedPassword){
-    // ====== MÀN HÌNH ĐĂNG KÝ ======
-    box.innerHTML = `
-        <h2>🔐 Tạo mật khẩu mới</h2>
-        <input type="password" id="newPass" placeholder="Tạo mật khẩu">
-        <br>
-        <input type="password" id="confirmPass" placeholder="Nhập lại mật khẩu">
-        <br>
-        <button onclick="register()">Đăng ký</button>
-        <p id="error"></p>
-    `;
+box.innerHTML = `
+<h2>🔐 Tạo mật khẩu mới</h2>
+<input type="password" id="newPass" placeholder="Tạo mật khẩu">
+<br>
+<input type="password" id="confirmPass" placeholder="Nhập lại mật khẩu">
+<br>
+<button onclick="register()">Đăng ký</button>
+<p id="error"></p>
+`;
 }
 
+/* ====== HÀM ĐĂNG KÝ ====== */
 function register(){
-    let newPass = document.getElementById("newPass").value;
-    let confirmPass = document.getElementById("confirmPass").value;
+let newPass = document.getElementById("newPass").value;
+let confirmPass = document.getElementById("confirmPass").value;
 
-    if(newPass.length < 4){
-        document.getElementById("error").innerText="❌ Ít nhất 4 ký tự!";
-        return;
-    }
-
-    if(newPass !== confirmPass){
-        document.getElementById("error").innerText="❌ Mật khẩu không khớp!";
-        return;
-    }
-
-    localStorage.setItem("appPassword", newPass);
-    alert("✅ Đăng ký thành công!");
-    location.reload();
+if(newPass.length < 4){
+document.getElementById("error").innerText="❌ Mật khẩu ít nhất 4 ký tự!";
+return;
 }
 
-function checkPass(){
-    let input = document.getElementById("pass").value;
-    let realPass = localStorage.getItem("appPassword");
+if(newPass !== confirmPass){
+document.getElementById("error").innerText="❌ Mật khẩu không khớp!";
+return;
+}
 
-    if(input === realPass){
-        localStorage.setItem("login","true");
-        window.location.href = "menu.html"; // chuyển về menu
-    }else{
-        document.getElementById("error").innerText="❌ Sai mật khẩu!";
-    }
+localStorage.setItem("appPassword", newPass);
+alert("✅ Đăng ký thành công!");
+location.reload();
+}
+
+/* ====== HÀM ĐĂNG NHẬP ====== */
+function login(){
+let input = document.getElementById("pass").value;
+let realPass = localStorage.getItem("appPassword");
+
+if(input === realPass){
+localStorage.setItem("login","true");
+window.location.href = "menu.html";
+}else{
+document.getElementById("error").innerText="❌ Sai mật khẩu!";
+}
 }
 </script>
+
+</body>
+</html>
