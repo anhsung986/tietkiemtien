@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Menu Tiết Kiệm</title>
+<title>Khóa Ứng Dụng</title>
 
 <style>
 body{
@@ -23,38 +23,53 @@ animation:rainbow 8s ease infinite;
 50%{background-position:100% 50%;}
 100%{background-position:0% 50%;}
 }
-.menu{text-align:center;}
-button{
-display:block;
-width:220px;
-margin:15px auto;
-padding:15px;
-border:none;
-border-radius:12px;
-font-size:18px;
-font-weight:bold;
-cursor:pointer;
-transition:0.2s;
+.box{
+text-align:center;
+background:rgba(0,0,0,0.6);
+padding:30px;
+border-radius:15px;
 }
-button:hover{transform:scale(1.05);}
+input{
+padding:10px;
+font-size:18px;
+border-radius:8px;
+border:none;
+margin-top:10px;
+text-align:center;
+}
+button{
+margin-top:15px;
+padding:10px 20px;
+font-size:16px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
 </style>
 </head>
 
 <body>
 
-<div class="menu">
-<h1>💰 Chọn Mức Tiết Kiệm</h1>
-
-<button onclick="go('5k.html')">5.000đ</button>
-<button onclick="go('10k.html')">10.000đ</button>
-<button onclick="go('15k.html')">15.000đ</button>
-<button onclick="go('20k.html')">20.000đ</button>
-
+<div class="box">
+<h2>🔐 Nhập mật khẩu</h2>
+<input type="password" id="pass" placeholder="Nhập mật khẩu">
+<br>
+<button onclick="checkPass()">Mở App</button>
+<p id="error"></p>
 </div>
 
 <script>
-function go(page){
-window.location.href = page;
+let password = "1234"; // 🔥 Đổi mật khẩu tại đây
+
+function checkPass(){
+let input = document.getElementById("pass").value;
+
+if(input === password){
+localStorage.setItem("login","true");
+window.location.href = "5k.html"; 
+}else{
+document.getElementById("error").innerText="❌ Sai mật khẩu!";
+}
 }
 </script>
 
