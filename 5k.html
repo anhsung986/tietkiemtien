@@ -57,6 +57,11 @@ color:white;
 font-size:16px;
 cursor:pointer;
 }
+
+.stats{
+margin-top:10px;
+font-size:16px;
+}
 </style>
 </head>
 
@@ -65,6 +70,12 @@ cursor:pointer;
 <div class="header">
 <h2>Tiết Kiệm 1m5</h2>
 <p id="status">Chưa chọn số tiền</p>
+
+<div class="stats">
+<p>💰 Đã tiết kiệm: <span id="totalMoney">0</span> đ</p>
+<p>📅 Số tuần đã hoàn thành: <span id="totalWeeks">0</span></p>
+</div>
+
 </div>
 
 <div class="grid" id="moneyGrid"></div>
@@ -75,13 +86,23 @@ cursor:pointer;
 let storageKey = "lockedButtons5k";
 let selectedAmount = null;
 
-// Lấy danh sách đã khóa
 let lockedButtons = JSON.parse(localStorage.getItem(storageKey)) || [];
 
 let grid = document.getElementById("moneyGrid");
 let status = document.getElementById("status");
+let totalMoneyEl = document.getElementById("totalMoney");
+let totalWeeksEl = document.getElementById("totalWeeks");
 
-// Tạo nút tiền từ 5k đến 1500k
+// Cập nhật thống kê
+function updateStats(){
+    let total = lockedButtons.reduce((a,b)=>a+b,0);
+    totalMoneyEl.innerText = total.toLocaleString();
+    totalWeeksEl.innerText = lockedButtons.length;
+}
+
+updateStats();
+
+// Tạo nút từ 5k đến 1500k
 for(let i=5; i<=1500; i+=5){
 
     let amount = i * 1000;
@@ -90,7 +111,6 @@ for(let i=5; i<=1500; i+=5){
     btn.className="money-btn";
     btn.innerText = i + "k";
 
-    // Nếu nút đã bị khóa
     if(lockedButtons.includes(amount)){
         btn.disabled = true;
     }
@@ -102,12 +122,10 @@ for(let i=5; i<=1500; i+=5){
     grid.appendChild(btn);
 }
 
-// Chọn tiền (chưa khóa)
 function selectMoney(amount, element){
 
     if(element.disabled) return;
 
-    // bỏ chọn cũ
     document.querySelectorAll(".money-btn").forEach(btn=>{
         btn.classList.remove("selected");
     });
@@ -115,10 +133,9 @@ function selectMoney(amount, element){
     element.classList.add("selected");
     selectedAmount = amount;
 
-    status.innerText = "Đã chọn: " + amount + "đ (Chưa lưu)";
+    status.innerText = "Đã chọn: " + amount.toLocaleString() + " đ (Chưa lưu)";
 }
 
-// Bấm lưu mới khóa
 function saveMoney(){
 
     if(selectedAmount == null){
