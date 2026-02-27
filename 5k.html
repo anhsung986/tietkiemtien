@@ -34,6 +34,11 @@ background:#4caf50;
 color:white;
 font-size:16px;
 cursor:pointer;
+transition:0.2s;
+}
+
+.money-btn.selected{
+background:#ff9800;
 }
 
 .money-btn:disabled{
@@ -42,9 +47,9 @@ cursor:not-allowed;
 opacity:0.6;
 }
 
-.lock-btn{
+.save-btn{
 margin:15px;
-padding:10px 20px;
+padding:12px 25px;
 border:none;
 border-radius:8px;
 background:#d32f2f;
@@ -64,60 +69,71 @@ cursor:pointer;
 
 <div class="grid" id="moneyGrid"></div>
 
-<button class="lock-btn" onclick="resetMoney()">🔓 Mở khóa</button>
+<button class="save-btn" onclick="saveMoney()">💾 LƯU & KHÓA</button>
 
 <script>
-let storageKey = "save5k";
-let lockedMoney = localStorage.getItem(storageKey);
+let storageKey = "lockedButtons5k";
+let selectedAmount = null;
+
+// Lấy danh sách đã khóa
+let lockedButtons = JSON.parse(localStorage.getItem(storageKey)) || [];
+
 let grid = document.getElementById("moneyGrid");
 let status = document.getElementById("status");
 
-// Tạo các mức tiền từ 5k đến 1m5
+// Tạo nút tiền từ 5k đến 1500k
 for(let i=5; i<=1500; i+=5){
+
+    let amount = i * 1000;
+
     let btn = document.createElement("button");
     btn.className="money-btn";
     btn.innerText = i + "k";
-    btn.onclick = function(){ choose(i*1000, btn); };
 
-    // Nếu đã khóa
-    if(lockedMoney){
+    // Nếu nút đã bị khóa
+    if(lockedButtons.includes(amount)){
         btn.disabled = true;
     }
+
+    btn.onclick = function(){
+        selectMoney(amount, btn);
+    };
 
     grid.appendChild(btn);
 }
 
-// Nếu đã có tiền được chọn
-if(lockedMoney){
-    status.innerText = "🔒 Đã khóa: " + lockedMoney + "đ";
-}
+// Chọn tiền (chưa khóa)
+function selectMoney(amount, element){
 
-function choose(amount, element){
+    if(element.disabled) return;
 
-    if(localStorage.getItem(storageKey)) return;
-
-    localStorage.setItem(storageKey, amount);
-
-    element.disabled = true;
-
+    // bỏ chọn cũ
     document.querySelectorAll(".money-btn").forEach(btn=>{
-        btn.disabled = true;
+        btn.classList.remove("selected");
     });
 
-    status.innerText = "🔒 Đã khóa: " + amount + "đ";
+    element.classList.add("selected");
+    selectedAmount = amount;
 
-    alert("✅ Đã chọn và khóa số tiền!");
+    status.innerText = "Đã chọn: " + amount + "đ (Chưa lưu)";
 }
 
-function resetMoney(){
-    let pass = prompt("Nhập mật khẩu để mở khóa:");
+// Bấm lưu mới khóa
+function saveMoney(){
 
-    if(pass === "1234"){ // đổi mật khẩu tại đây
-        localStorage.removeItem(storageKey);
-        location.reload();
-    }else{
-        alert("❌ Sai mật khẩu!");
+    if(selectedAmount == null){
+        alert("⚠ Vui lòng chọn số tiền trước!");
+        return;
     }
+
+    if(!lockedButtons.includes(selectedAmount)){
+        lockedButtons.push(selectedAmount);
+        localStorage.setItem(storageKey, JSON.stringify(lockedButtons));
+    }
+
+    alert("✅ Đã lưu và khóa!");
+
+    location.reload();
 }
 </script>
 
