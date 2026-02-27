@@ -14,7 +14,7 @@ text-align:center;
 }
 
 .header{
-background:#2f5d0f;
+background:#1b5e20;
 color:white;
 padding:15px;
 }
@@ -34,7 +34,6 @@ background:#4caf50;
 color:white;
 font-size:15px;
 cursor:pointer;
-transition:0.2s;
 }
 
 .money-btn.selected{
@@ -43,8 +42,8 @@ background:#ff9800;
 
 .money-btn:disabled{
 background:#999;
-cursor:not-allowed;
 opacity:0.6;
+cursor:not-allowed;
 }
 
 .save-btn{
@@ -69,54 +68,52 @@ font-size:16px;
 
 <div class="header">
 <h2>Tiết Kiệm 1.500.000đ</h2>
-<p id="status">Chưa chọn số tiền</p>
+<p id="status">Chưa chọn tuần</p>
 
 <div class="stats">
 <p>💰 Đã tiết kiệm: <span id="totalMoney">0</span> đ</p>
-<p>📅 Số tuần đã hoàn thành: <span id="totalWeeks">0</span></p>
+<p>📅 Số tuần còn lại: <span id="weeksLeft">300</span></p>
 </div>
-
 </div>
 
 <div class="grid" id="moneyGrid"></div>
 
-<button class="save-btn" onclick="saveMoney()">💾 LƯU & KHÓA</button>
+<button class="save-btn" onclick="saveWeek()">💾 LƯU TUẦN</button>
 
 <script>
 
-let storageKey = "saveMoneyData";
-let selectedAmount = null;
+let storageKey = "completedWeeks";
+let selectedWeek = null;
 
-// Lấy dữ liệu đã lưu
-let lockedButtons = JSON.parse(localStorage.getItem(storageKey)) || [];
+let completedWeeks = JSON.parse(localStorage.getItem(storageKey)) || [];
 
 let grid = document.getElementById("moneyGrid");
 let status = document.getElementById("status");
 let totalMoneyEl = document.getElementById("totalMoney");
-let totalWeeksEl = document.getElementById("totalWeeks");
+let weeksLeftEl = document.getElementById("weeksLeft");
 
-// ===== TẠO 300 TUẦN (5k → 1500k) =====
-for(let i = 1; i <= 300; i++){
+// ===== TẠO 300 TUẦN =====
+for(let week = 1; week <= 300; week++){
 
-    let amount = i * 5000; // mỗi tuần 5k
+    let amount = week * 5000;
 
     let btn = document.createElement("button");
     btn.className = "money-btn";
-    btn.innerText = (amount / 1000) + "k";
+    btn.innerText = (amount/1000) + "k";
 
-    if(lockedButtons.includes(amount)){
+    if(completedWeeks.includes(week)){
         btn.disabled = true;
     }
 
     btn.onclick = function(){
-        selectMoney(amount, btn);
+        selectWeek(week, btn);
     };
 
     grid.appendChild(btn);
 }
 
-// ===== CHỌN TIỀN =====
-function selectMoney(amount, element){
+// ===== CHỌN TUẦN =====
+function selectWeek(week, element){
 
     if(element.disabled) return;
 
@@ -125,36 +122,46 @@ function selectMoney(amount, element){
     });
 
     element.classList.add("selected");
-    selectedAmount = amount;
+    selectedWeek = week;
 
-    status.innerText = "Đã chọn: " + amount.toLocaleString() + " đ (Chưa lưu)";
+    status.innerText = "Đã chọn tuần " + week;
 }
 
-// ===== LƯU & KHÓA =====
-function saveMoney(){
+// ===== LƯU TUẦN =====
+function saveWeek(){
 
-    if(selectedAmount === null){
-        alert("⚠ Vui lòng chọn số tiền trước!");
+    if(selectedWeek === null){
+        alert("⚠ Vui lòng chọn tuần trước!");
         return;
     }
 
-    if(!lockedButtons.includes(selectedAmount)){
-        lockedButtons.push(selectedAmount);
-        localStorage.setItem(storageKey, JSON.stringify(lockedButtons));
+    if(!completedWeeks.includes(selectedWeek)){
+        completedWeeks.push(selectedWeek);
+        localStorage.setItem(storageKey, JSON.stringify(completedWeeks));
     }
 
-    alert("✅ Đã lưu thành công!");
+    alert("✅ Đã lưu tuần!");
 
     location.reload();
 }
 
-// ===== CẬP NHẬT THỐNG KÊ =====
+// ===== TÍNH TỔNG & TUẦN CÒN LẠI =====
 function updateStats(){
 
-    let total = lockedButtons.reduce((sum, value) => sum + value, 0);
+    let total = 0;
+
+    completedWeeks.forEach(week=>{
+        total += week * 5000;
+    });
 
     totalMoneyEl.innerText = total.toLocaleString();
-    totalWeeksEl.innerText = lockedButtons.length;
+
+    let weeksLeft = 300 - completedWeeks.length;
+    weeksLeftEl.innerText = weeksLeft;
+
+    if(weeksLeft === 0){
+        alert("🎉 Chúc mừng! Bạn đã hoàn thành 1.500.000đ!");
+    }
 }
 
 updateStats();
