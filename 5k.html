@@ -3,84 +3,121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tiết Kiệm 5K</title>
+<title>Tiết Kiệm 1m5</title>
 
 <style>
 body{
+margin:0;
 font-family:Arial;
-text-align:center;
-background:#f2f2f2;
-padding-top:50px;
-}
-.box{
-background:white;
-padding:30px;
-border-radius:15px;
-width:300px;
-margin:auto;
-box-shadow:0 0 10px rgba(0,0,0,0.2);
-}
-input{
-padding:10px;
-font-size:18px;
-width:80%;
+background:linear-gradient(to right,#c6ff00,#a8e063);
 text-align:center;
 }
-button{
-margin-top:15px;
-padding:10px 20px;
-font-size:16px;
+
+.header{
+background:#2f5d0f;
+color:white;
+padding:15px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+padding:15px;
+}
+
+.money-btn{
+padding:15px;
 border:none;
-border-radius:8px;
+border-radius:10px;
+background:#4caf50;
+color:white;
+font-size:16px;
 cursor:pointer;
 }
-#status{
-margin-top:10px;
-color:green;
+
+.money-btn:disabled{
+background:#999;
+cursor:not-allowed;
+opacity:0.6;
+}
+
+.lock-btn{
+margin:15px;
+padding:10px 20px;
+border:none;
+border-radius:8px;
+background:#d32f2f;
+color:white;
+font-size:16px;
+cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<div class="box">
-<h2>💰 Tiết Kiệm 5.000đ</h2>
-
-<input type="number" id="money" placeholder="Nhập số tiền">
-
-<br>
-<button onclick="saveMoney()">Lưu lại</button>
-
-<p id="status"></p>
-
-<br>
-<button onclick="window.location.href='menu.html'">⬅ Quay về</button>
+<div class="header">
+<h2>Tiết Kiệm 1m5</h2>
+<p id="status">Chưa chọn số tiền</p>
 </div>
+
+<div class="grid" id="moneyGrid"></div>
+
+<button class="lock-btn" onclick="resetMoney()">🔓 Mở khóa</button>
 
 <script>
 let storageKey = "save5k";
-let saved = localStorage.getItem(storageKey);
+let lockedMoney = localStorage.getItem(storageKey);
+let grid = document.getElementById("moneyGrid");
+let status = document.getElementById("status");
 
-if(saved){
-document.getElementById("money").value = saved;
-document.getElementById("money").disabled = true;
-document.querySelector("button").disabled = true;
-document.getElementById("status").innerText="✅ Đã lưu và khóa chỉnh sửa!";
+// Tạo các mức tiền từ 5k đến 1m5
+for(let i=5; i<=1500; i+=5){
+    let btn = document.createElement("button");
+    btn.className="money-btn";
+    btn.innerText = i + "k";
+    btn.onclick = function(){ choose(i*1000, btn); };
+
+    // Nếu đã khóa
+    if(lockedMoney){
+        btn.disabled = true;
+    }
+
+    grid.appendChild(btn);
 }
 
-function saveMoney(){
-let value = document.getElementById("money").value;
-
-if(value === "" || value <= 0){
-alert("Nhập số tiền hợp lệ!");
-return;
+// Nếu đã có tiền được chọn
+if(lockedMoney){
+    status.innerText = "🔒 Đã khóa: " + lockedMoney + "đ";
 }
 
-localStorage.setItem(storageKey, value);
+function choose(amount, element){
 
-document.getElementById("money").disabled = true;
-document.querySelector("button").disabled = true;
-document.getElementById("status").innerText="✅ Đã lưu và khóa chỉnh sửa!";
+    if(localStorage.getItem(storageKey)) return;
+
+    localStorage.setItem(storageKey, amount);
+
+    element.disabled = true;
+
+    document.querySelectorAll(".money-btn").forEach(btn=>{
+        btn.disabled = true;
+    });
+
+    status.innerText = "🔒 Đã khóa: " + amount + "đ";
+
+    alert("✅ Đã chọn và khóa số tiền!");
+}
+
+function resetMoney(){
+    let pass = prompt("Nhập mật khẩu để mở khóa:");
+
+    if(pass === "1234"){ // đổi mật khẩu tại đây
+        localStorage.removeItem(storageKey);
+        location.reload();
+    }else{
+        alert("❌ Sai mật khẩu!");
+    }
 }
 </script>
 
