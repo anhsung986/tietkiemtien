@@ -10,14 +10,7 @@ body{
     margin:0;
     font-family: Arial, sans-serif;
     color:white;
-
-    /* CẦU VỒNG 4 MÀU */
-    background: linear-gradient(-45deg,
-        #ff4da6,   /* Hồng */
-        #ffd700,   /* Vàng */
-        #00cc66,   /* Xanh lá */
-        #3399ff    /* Xanh dương */
-    );
+    background: linear-gradient(-45deg,#ff4da6,#ffd700,#00cc66,#3399ff);
     background-size: 400% 400%;
     animation: rainbow 8s ease infinite;
 }
@@ -28,7 +21,6 @@ body{
     100%{background-position:0% 50%;}
 }
 
-/* HEADER */
 .header{
     position:fixed;
     top:0;
@@ -41,16 +33,6 @@ body{
     z-index:1000;
 }
 
-.header h1{
-    margin:0 0 10px 0;
-}
-
-.info{
-    margin:5px 0;
-    font-size:18px;
-}
-
-/* GRID */
 .container{
     padding:20px;
     margin-top:200px;
@@ -87,8 +69,8 @@ body{
 
 <div class="header">
     <h1>Tiết Kiệm 1m5</h1>
-    <div class="info" id="weeksLeft"></div>
-    <div class="info" id="savedMoney"></div>
+    <div id="weeksLeft"></div>
+    <div id="savedMoney"></div>
 </div>
 
 <div class="container">
@@ -98,7 +80,7 @@ body{
 <script>
 let weekly = 15000;
 let target = 1500000;
-let totalWeeks = target / weekly;
+let totalWeeks = Math.floor(target / weekly);
 
 let completed = 0;
 let saved = 0;
@@ -110,7 +92,9 @@ let savedMoneyText = document.getElementById("savedMoney");
 weeksLeftText.innerText = "Số tuần còn lại: " + totalWeeks;
 savedMoneyText.innerText = "Đã tiết kiệm: 0đ";
 
-for(let money = weekly; money <= target; money += weekly){
+for(let i = 1; i <= totalWeeks; i++){
+
+    let money = i * weekly;
 
     let box = document.createElement("div");
     box.className = "box";
