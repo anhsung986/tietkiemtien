@@ -7,158 +7,81 @@
 
 <style>
 body{
-margin:0;
 font-family:Arial;
-color:white;
-background: linear-gradient(-45deg,#ff4da6,#ffd700,#00cc66,#3399ff);
-background-size:400% 400%;
-animation:rainbow 8s ease infinite;
-}
-@keyframes rainbow{
-0%{background-position:0% 50%;}
-50%{background-position:100% 50%;}
-100%{background-position:0% 50%;}
-}
-.header{
-position:fixed;
-top:0;
-width:100%;
-padding:20px;
 text-align:center;
-background:rgba(0,0,0,0.6);
-}
-.container{
-margin-top:230px;
-padding:20px;
-}
-.grid{
-display:grid;
-grid-template-columns:repeat(6,1fr);
-gap:8px;
+background:#f2f2f2;
+padding-top:50px;
 }
 .box{
-background:#4CAF50;
-padding:12px 0;
-text-align:center;
-border-radius:10px;
-font-size:13px;
-cursor:pointer;
+background:white;
+padding:30px;
+border-radius:15px;
+width:300px;
+margin:auto;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
 }
-.box.done{background:#e53935;}
-
-.progress{
+input{
+padding:10px;
+font-size:18px;
 width:80%;
-height:15px;
-background:#555;
-margin:10px auto;
-border-radius:10px;
-overflow:hidden;
+text-align:center;
 }
-.bar{
-height:100%;
-width:0%;
-background:lime;
-}
-
-.back{
-position:fixed;
-bottom:20px;
-left:50%;
-transform:translateX(-50%);
-background:black;
+button{
+margin-top:15px;
 padding:10px 20px;
-border-radius:10px;
+font-size:16px;
+border:none;
+border-radius:8px;
 cursor:pointer;
+}
+#status{
+margin-top:10px;
+color:green;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-<h2 id="title"></h2>
-<div id="left"></div>
-<div id="saved"></div>
+<div class="box">
+<h2>💰 Tiết Kiệm 5.000đ</h2>
 
-<div class="progress">
-<div class="bar" id="bar"></div>
-</div>
-<div id="percent"></div>
-</div>
+<input type="number" id="money" placeholder="Nhập số tiền">
 
-<div class="container">
-<div class="grid" id="grid"></div>
-</div>
+<br>
+<button onclick="saveMoney()">Lưu lại</button>
 
-<div class="back" onclick="window.location.href='index.html'">
-⬅ Quay về Menu
+<p id="status"></p>
+
+<br>
+<button onclick="window.location.href='menu.html'">⬅ Quay về</button>
 </div>
 
 <script>
-let weekly = 5000;
-let label = "5k";
-let title = "Tiết Kiệm 5.000đ";
 let storageKey = "save5k";
+let saved = localStorage.getItem(storageKey);
 
-let target = 1500000;
-let total = Math.floor(target / weekly);
-
-let completed = 0;
-let savedData = JSON.parse(localStorage.getItem(storageKey)) || [];
-
-document.getElementById("title").innerText = title;
-
-let grid = document.getElementById("grid");
-
-function updateUI(){
-let saved = completed * weekly;
-let percent = Math.floor((completed/total)*100);
-
-document.getElementById("left").innerText =
-"Số lần còn lại: " + (total-completed);
-
-document.getElementById("saved").innerText =
-"Đã tiết kiệm: " + saved.toLocaleString()+"đ";
-
-document.getElementById("bar").style.width = percent+"%";
-document.getElementById("percent").innerText = percent+"%";
-
-if(percent === 100){
-alert("🎉 Chúc mừng! Bạn đã đủ 1.500.000đ!");
-}
+if(saved){
+document.getElementById("money").value = saved;
+document.getElementById("money").disabled = true;
+document.querySelector("button").disabled = true;
+document.getElementById("status").innerText="✅ Đã lưu và khóa chỉnh sửa!";
 }
 
-for(let i=0;i<total;i++){
+function saveMoney(){
+let value = document.getElementById("money").value;
 
-let box=document.createElement("div");
-box.className="box";
-box.innerText=label;
-
-if(savedData.includes(i)){
-box.classList.add("done");
-completed++;
+if(value === "" || value <= 0){
+alert("Nhập số tiền hợp lệ!");
+return;
 }
 
-box.onclick=function(){
+localStorage.setItem(storageKey, value);
 
-if(!box.classList.contains("done")){
-box.classList.add("done");
-savedData.push(i);
-completed++;
-}else{
-box.classList.remove("done");
-savedData = savedData.filter(x=>x!==i);
-completed--;
+document.getElementById("money").disabled = true;
+document.querySelector("button").disabled = true;
+document.getElementById("status").innerText="✅ Đã lưu và khóa chỉnh sửa!";
 }
-
-localStorage.setItem(storageKey, JSON.stringify(savedData));
-updateUI();
-}
-
-grid.appendChild(box);
-}
-
-updateUI();
 </script>
 
 </body>
