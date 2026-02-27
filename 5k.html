@@ -3,64 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tiết Kiệm 1m5</title>
+<title>Tiết Kiệm 5K</title>
 
 <style>
 body{
-    margin:0;
-    font-family: Arial, sans-serif;
-    color:white;
-    background: linear-gradient(-45deg,#ff4da6,#ffd700,#00cc66,#3399ff);
-    background-size: 400% 400%;
-    animation: rainbow 8s ease infinite;
+margin:0;
+font-family:Arial;
+color:white;
+background: linear-gradient(-45deg,#ff4da6,#ffd700,#00cc66,#3399ff);
+background-size:400% 400%;
+animation:rainbow 8s ease infinite;
 }
-
 @keyframes rainbow{
-    0%{background-position:0% 50%;}
-    50%{background-position:100% 50%;}
-    100%{background-position:0% 50%;}
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
 }
-
 .header{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    padding:20px 10px;
-    text-align:center;
-    background:rgba(0,0,0,0.6);
-    backdrop-filter: blur(6px);
-    z-index:1000;
+position:fixed;
+top:0;
+width:100%;
+padding:20px;
+text-align:center;
+background:rgba(0,0,0,0.6);
 }
-
 .container{
-    padding:20px;
-    margin-top:200px;
+margin-top:230px;
+padding:20px;
 }
-
 .grid{
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:10px;
+display:grid;
+grid-template-columns:repeat(6,1fr);
+gap:8px;
 }
-
 .box{
-    background:#4CAF50;
-    padding:14px 0;
-    text-align:center;
-    border-radius:12px;
-    font-weight:bold;
-    font-size:14px;
-    cursor:pointer;
-    transition:0.2s;
+background:#4CAF50;
+padding:12px 0;
+text-align:center;
+border-radius:10px;
+font-size:13px;
+cursor:pointer;
+}
+.box.done{background:#e53935;}
+
+.progress{
+width:80%;
+height:15px;
+background:#555;
+margin:10px auto;
+border-radius:10px;
+overflow:hidden;
+}
+.bar{
+height:100%;
+width:0%;
+background:lime;
 }
 
-.box:active{
-    transform:scale(0.95);
-}
-
-.box.done{
-    background:#e53935;
+.back{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+background:black;
+padding:10px 20px;
+border-radius:10px;
+cursor:pointer;
 }
 </style>
 </head>
@@ -68,61 +76,89 @@ body{
 <body>
 
 <div class="header">
-    <h1>Tiết Kiệm 1m5 (5k/lần)</h1>
-    <div id="weeksLeft"></div>
-    <div id="savedMoney"></div>
+<h2 id="title"></h2>
+<div id="left"></div>
+<div id="saved"></div>
+
+<div class="progress">
+<div class="bar" id="bar"></div>
+</div>
+<div id="percent"></div>
 </div>
 
 <div class="container">
-    <div class="grid" id="grid"></div>
+<div class="grid" id="grid"></div>
+</div>
+
+<div class="back" onclick="window.location.href='index.html'">
+⬅ Quay về Menu
 </div>
 
 <script>
-let weekly = 5000;        // 🔥 5k mỗi lần
+let weekly = 5000;
+let label = "5k";
+let title = "Tiết Kiệm 5.000đ";
+let storageKey = "save5k";
+
 let target = 1500000;
-let totalWeeks = Math.floor(target / weekly);
+let total = Math.floor(target / weekly);
 
 let completed = 0;
-let saved = 0;
+let savedData = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+document.getElementById("title").innerText = title;
 
 let grid = document.getElementById("grid");
-let weeksLeftText = document.getElementById("weeksLeft");
-let savedMoneyText = document.getElementById("savedMoney");
 
-weeksLeftText.innerText = "Số lần còn lại: " + totalWeeks;
-savedMoneyText.innerText = "Đã tiết kiệm: 0đ";
+function updateUI(){
+let saved = completed * weekly;
+let percent = Math.floor((completed/total)*100);
 
-for(let i = 1; i <= totalWeeks; i++){
+document.getElementById("left").innerText =
+"Số lần còn lại: " + (total-completed);
 
-    let money = i * weekly;
+document.getElementById("saved").innerText =
+"Đã tiết kiệm: " + saved.toLocaleString()+"đ";
 
-    let box = document.createElement("div");
-    box.className = "box";
-    box.innerText = "5k";
+document.getElementById("bar").style.width = percent+"%";
+document.getElementById("percent").innerText = percent+"%";
 
-    box.onclick = function(){
-
-        if(!box.classList.contains("done")){
-            box.classList.add("done");
-            box.innerText = "5k ❌";
-            completed++;
-            saved += weekly;
-        }else{
-            box.classList.remove("done");
-            box.innerText = "5k";
-            completed--;
-            saved -= weekly;
-        }
-
-        weeksLeftText.innerText =
-            "Số lần còn lại: " + (totalWeeks - completed);
-
-        savedMoneyText.innerText =
-            "Đã tiết kiệm: " + saved.toLocaleString() + "đ";
-    };
-
-    grid.appendChild(box);
+if(percent === 100){
+alert("🎉 Chúc mừng! Bạn đã đủ 1.500.000đ!");
 }
+}
+
+for(let i=0;i<total;i++){
+
+let box=document.createElement("div");
+box.className="box";
+box.innerText=label;
+
+if(savedData.includes(i)){
+box.classList.add("done");
+completed++;
+}
+
+box.onclick=function(){
+
+if(!box.classList.contains("done")){
+box.classList.add("done");
+savedData.push(i);
+completed++;
+}else{
+box.classList.remove("done");
+savedData = savedData.filter(x=>x!==i);
+completed--;
+}
+
+localStorage.setItem(storageKey, JSON.stringify(savedData));
+updateUI();
+}
+
+grid.appendChild(box);
+}
+
+updateUI();
 </script>
 
 </body>
